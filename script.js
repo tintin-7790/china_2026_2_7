@@ -35,7 +35,11 @@ const SHAPE_CATS = {
     bottle: {
         name: '瓶 · 尊',
         items: [
-            { id: 'meiping', name: '梅瓶', scaleY: 1.0, scaleR: 1.0, func: y => 0.5 + Math.sin(y*Math.PI)*0.5 + (y>0.6? -Math.pow(y-0.6,2)*5 : 0) },
+            { id: 'meiping', name: '梅瓶', scaleY: 1.0, scaleR: 1.0, func: y => {
+                if (y >= 0.86) return 0.38;
+                if (y >= 0.72) return 0.38 + (0.52 - 0.38) * (1 - (y - 0.72) / 0.14);
+                return 0.42 + Math.sin(y * Math.PI) * 0.48 + (y > 0.58 ? -Math.pow((y - 0.58) / 0.28, 1.6) * 0.38 : 0);
+            }},
             { id: 'yuhuchun', name: '玉壶春', scaleY: 1.0, scaleR: 0.9, func: y => 0.4 + Math.pow(y, 1.5)*0.8 - Math.sin(y*Math.PI*2)*0.15 },
             { id: 'hulu', name: '葫芦瓶', scaleY: 1.0, scaleR: 1.0, func: y => 0.3 + (y<0.45 ? Math.sin(y/0.45*Math.PI)*0.5 : Math.sin((y-0.45)/0.55*Math.PI)*0.4) },
             { id: 'suantou', name: '蒜头瓶', scaleY: 1.0, scaleR: 0.9, func: y => y>0.85 ? 0.3+Math.sin((y-0.85)*20)*0.1 : 0.4 + Math.sin(y*Math.PI)*0.5 },
