@@ -6,8 +6,8 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const CONFIG = {
     segRadial: 128,    // 径向分段
     segHeight: 120,    // 高度分段
-    baseRadius: 1.0,   // 基础外半径
-    height: 3.5,       // 基础高度
+    baseRadius: 0.72,  // 基础外半径（缩小瓷器）
+    height: 2.5,       // 基础高度
     clayThickness: 0.15, // 泥胚厚度
     spinSpeed: 0.02
 };
@@ -153,6 +153,17 @@ function init() {
     canvas.addEventListener('pointerup', onPointerUp);
 
     document.getElementById('loading-screen').style.display = 'none';
+
+    const bottomPanel = document.getElementById('bottom-panel');
+    const panelHandle = document.getElementById('panel-handle');
+    const handleText = panelHandle && panelHandle.querySelector('.panel-handle-text');
+    if (panelHandle && bottomPanel) {
+        panelHandle.addEventListener('click', () => {
+            bottomPanel.classList.toggle('collapsed');
+            if (handleText) handleText.textContent = bottomPanel.classList.contains('collapsed') ? '展开' : '收起';
+        });
+    }
+
     enterStage('INTRO');
     animate();
 }
@@ -731,7 +742,7 @@ function createSceneTrees() {
     const seed = 12345;
     const rnd = (i) => ((Math.sin(i * 7 + seed) * 0.5 + 0.5) * 0.4 + 0.8);
     const positions = [];
-    const radii = [3.2, 3.8, 3.0, 4.2, 3.9, 3.5, 4.5, 3.4, 3.9, 4.0, 3.3, 4.3, 3.6];
+    const radii = [4.2, 4.9, 4.0, 5.3, 5.0, 4.5, 5.7, 4.4, 5.1, 5.2, 4.3, 5.5, 4.7];
     const angles = [0.1, 0.55, 1.0, 1.35, 1.9, 2.25, 2.7, 3.15, 3.6, 4.0, 4.5, 5.1, 5.6];
     radii.forEach((R, i) => {
         const a = angles[i] * Math.PI;
@@ -756,8 +767,8 @@ function createSceneStones() {
     const stoneMat = new THREE.MeshStandardMaterial({ color: 0x5c5346, roughness: 0.95, metalness: 0.02 });
     const stoneMat2 = new THREE.MeshStandardMaterial({ color: 0x4a4238, roughness: 0.9, metalness: 0.03 });
     const positions = [
-        [-1.4, 2.6], [2.4, 2.4], [2.6, -1.8], [-2.2, -2.0], [0.6, -2.8], [-2.6, 0.8],
-        [1.2, 2.9], [-1.6, -3.0], [3.0, 0.4], [-0.6, 3.2]
+        [-1.8, 3.2], [3.0, 3.0], [3.2, -2.2], [-2.8, -2.5], [0.8, -3.5], [-3.2, 1.0],
+        [1.5, 3.6], [-2.0, -3.8], [3.8, 0.5], [-0.8, 4.0]
     ];
     const sizes = [0.08, 0.12, 0.1, 0.14, 0.07, 0.11, 0.09, 0.13, 0.06, 0.1];
     positions.forEach((p, i) => {
@@ -779,7 +790,7 @@ function createSceneStones() {
 function createSceneFence() {
     const wheelY = -0.85;
     const baseY = wheelY - 0.12;
-    const radius = 3.8;
+    const radius = 5.2;
     const numPosts = 4;
     const postHeight = 0.35;
     const postRadius = 0.04;

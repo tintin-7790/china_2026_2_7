@@ -72,18 +72,59 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
-/* --- 底部控制面板 (核心交互区) --- */
+/* --- 底部控制面板 (核心交互区)，可点击折叠 --- */
 .bottom-panel {
     background: var(--bg-overlay);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-top: 1px solid rgba(255,255,255,0.1);
-    padding: 20px 15px 30px 15px;
+    padding: 0;
     pointer-events: auto;
-    min-height: 220px;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     border-radius: 20px 20px 0 0;
+}
+
+.panel-handle {
+    padding: 10px 15px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--accent);
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    transition: background 0.2s, color 0.2s;
+}
+.panel-handle:hover { background: rgba(255,255,255,0.06); }
+.panel-handle:active { background: rgba(255,255,255,0.1); }
+.panel-handle-icon {
+    font-size: 0.7rem;
+    transition: transform 0.25s ease;
+}
+.bottom-panel.collapsed .panel-handle {
+    border-bottom: none;
+    border-radius: 20px 20px 0 0;
+}
+.bottom-panel.collapsed .panel-handle-icon {
+    transform: rotate(-180deg);
+}
+
+.panel-body {
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+    max-height: 90vh;
+}
+.bottom-panel.collapsed .panel-body {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.panel-body .control-content {
+    padding: 15px 15px 25px;
 }
 
 .control-content {
@@ -188,3 +229,40 @@ body {
     pointer-events: none; /* 不阻挡拖拽，保证可转动视角 */
 }
 .feedback-val { font-size: 3rem; font-weight: bold; color: #ffab91; text-shadow: 0 0 20px #e64a19; }
+
+/* --- 手机端：操作界面压低、少挡瓷器画面 --- */
+@media (max-width: 768px) {
+    .top-bar {
+        padding: 10px 12px 8px;
+    }
+    .header-group { margin-bottom: 6px; }
+    .stage-badge { padding: 3px 8px; font-size: 0.7rem; }
+    .app-title { font-size: 0.95rem; letter-spacing: 1px; }
+    .avatar { width: 32px; height: 32px; font-size: 1.2rem; margin-right: 8px; }
+    .bubble { padding: 8px 12px; font-size: 0.8rem; }
+    .master-message { max-width: 92%; }
+
+    .bottom-panel { border-radius: 16px 16px 0 0; }
+    .panel-body { max-height: 38vh; overflow-y: auto; }
+    .panel-body .control-content { padding: 10px 12px 16px; }
+    .clay-grid { gap: 16px; margin-bottom: 12px; }
+    .clay-ball { width: 48px; height: 48px; margin-bottom: 4px; }
+    .category-tabs { margin-bottom: 10px; padding: 3px; }
+    .tab-btn { padding: 6px; font-size: 0.8rem; }
+    .shape-scroller { padding-bottom: 6px; }
+    .shape-card { min-width: 68px; height: 92px; }
+    .shape-preview svg { width: 32px; height: 56px; }
+    .shape-name { font-size: 0.65rem; margin-top: 4px; }
+    .mineral-rack { gap: 10px; margin-bottom: 10px; }
+    .mineral { width: 44px; }
+    .rock-icon { width: 34px; height: 30px; }
+    .btn { padding: 10px 22px; font-size: 0.9rem; margin-top: 6px; }
+    .fire-controls { gap: 12px; }
+    .fire-btn { padding: 12px; max-width: 100px; }
+}
+
+@media (max-width: 480px) {
+    .panel-body { max-height: 34vh; }
+    .panel-body .control-content { padding: 8px 10px 12px; }
+    .feedback-val { font-size: 2.2rem; }
+}
