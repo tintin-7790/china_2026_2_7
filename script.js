@@ -1034,22 +1034,20 @@ function createClayMesh(clayData) {
         points.push(new THREE.Vector2(r - thick, thick + (h - thick) * t));
     }
     
-    // --- C. 口沿：薄边 + 微外卷 ---
-    const rimArcSteps = 5;
-    const rimArcRadius = thick * 0.45;
-    const rimCenterX = r - thick;
-    const rimCenterY = h + rimArcRadius;
+    // --- C. 口沿：与器身同量级厚度，单弧圆润光滑、有瓷器口缘感 ---
+    const rimRadius = thick * 0.78;
+    const rimCenterX = r - thick * 0.5;
+    const rimCenterY = h + Math.sqrt(Math.max(0, rimRadius * rimRadius - thick * thick * 0.25));
+    const angleStart = Math.atan2((h - rimCenterY), (r - thick - rimCenterX));
+    const angleEnd = Math.atan2((h - rimCenterY), (r - rimCenterX));
+    const rimArcSteps = 22;
     for (let i = 1; i <= rimArcSteps; i++) {
-        const angle = -Math.PI / 2 + (i / rimArcSteps) * (Math.PI / 2);
-        const px = rimCenterX + Math.cos(angle) * rimArcRadius;
-        const py = rimCenterY + Math.sin(angle) * rimArcRadius;
+        const angle = angleStart + (i / rimArcSteps) * (angleEnd - angleStart);
+        const px = rimCenterX + Math.cos(angle) * rimRadius;
+        const py = rimCenterY + Math.sin(angle) * rimRadius;
         points.push(new THREE.Vector2(px, py));
     }
-    const curlOut = thick * 0.22;
-    const curlUp = thick * 0.18;
-    points.push(new THREE.Vector2(r + curlOut, h + curlUp));
-    points.push(new THREE.Vector2(r, h));
-    
+
     // --- D. 外壁 (向下) ---
     for(let i=wallSteps; i>=0; i--) {
         const t = i/wallSteps;
@@ -1069,7 +1067,7 @@ function createClayMesh(clayData) {
     const wallType = new Float32Array(count);
     const pointsCount = points.length;
     
-    const rimPointCount = 7;
+    const rimPointCount = 22;
     const idxInnerStart = floorSteps + 1;
     const idxInnerEnd = floorSteps + 1 + wallSteps;
     const idxOuterStart = idxInnerEnd + rimPointCount + 1;
@@ -1224,17 +1222,17 @@ function morphToTarget() {
         const type = wallTypes.getX(i);
         let normY = Math.max(0, Math.min(1, y / CONFIG.height));
         let baseR = shape.func(normY) * shape.scaleR * CONFIG.baseRadius;
-        const rimTaper = normY > 0.88 ? (1 - normY) / 0.12 : 1;
-        const rimThin = 0.7 + 0.3 * Math.max(0, Math.min(1, rimTaper));
-        const effThickness = thickness * (normY > 0.88 ? rimThin : 1);
-        if (normY > 0.92) baseR *= 1 + 0.016 * (normY - 0.92) / 0.08;
+        const thicknessFactor = normY <= 0.22 ? 1 : (1 - 0.6 * (normY - 0.22) / 0.78);
+        const effThickness = thickness * Math.max(0.4, thicknessFactor);
+        if (normY > 0.92) baseR *= 1 + 0.008 * (normY - 0.92) / 0.08;
         let r = baseR;
+        const rimTopTaper = (normY > 0.93) ? (0.72 + 0.28 * (1 - normY) / 0.07) : 1;
         if (type === -1.0) {
              r = Math.max(0.05, baseR - effThickness);
         } else if (type === 1.0) {
              r = baseR;
         } else {
-             r = Math.max(0.05, baseR - effThickness * 0.5);
+             r = Math.max(0.05, baseR - effThickness * 0.5 * rimTopTaper);
              if (y < 0.1) r = baseR * (currentR / CONFIG.baseRadius);
         }
         
